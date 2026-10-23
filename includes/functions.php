@@ -156,15 +156,14 @@ function listar_ativos(string $tabela): array
 
 // ---------- Regras de agenda ----------
 /**
- * Retorna o evento APROVADO que conflita com o período informado no mesmo ambiente,
- * ou null se o horário estiver livre.
+ * Retorna o evento APROVADO que já ocupa o mesmo ambiente, na mesma data e no mesmo período
+ * (matutino/vespertino/noturno), ou null se estiver livre. Um evento aprovado reserva o período inteiro.
  */
-function conflito_agenda(int $ambienteId, string $data, string $ini, string $fim, ?int $ignorarId = null): ?array
+function conflito_agenda(int $ambienteId, string $data, string $periodo, ?int $ignorarId = null): ?array
 {
-    $sql = "SELECT id, titulo, hora_inicio, hora_fim FROM solicitacoes
-            WHERE status = 'aprovado' AND ambiente_id = ? AND data_evento = ?
-              AND hora_inicio < ? AND hora_fim > ?";
-    $p = [$ambienteId, $data, $fim, $ini];
+    $sql = "SELECT id, titulo, periodo, hora_inicio, hora_fim FROM solicitacoes
+            WHERE status = 'aprovado' AND ambiente_id = ? AND data_evento = ? AND periodo = ?";
+    $p = [$ambienteId, $data, $periodo];
     if ($ignorarId) {
         $sql .= ' AND id <> ?';
         $p[] = $ignorarId;
@@ -172,6 +171,13 @@ function conflito_agenda(int $ambienteId, string $data, string $ini, string $fim
     $st = db()->prepare($sql . ' LIMIT 1');
     $st->execute($p);
     return $st->fetch() ?: null;
+}
+
+function mensagem_conflito(array $c): string
+{
+    return 'Este ambiente já está reservado no período ' . PERIODOS[$c['periodo']]['rotulo']
+         . ' desta data pelo evento "' . $c['titulo'] . '" ('
+         . hora_br($c['hora_inicio']) . ' às ' . hora_br($c['hora_fim']) . ').';
 }
 
 /**
@@ -245,11 +251,8 @@ function solicitacao_ler_post(bool $admin, ?int $idAtual = null, bool $checarCon
     if ($d['palestrante'] === '') $d['palestrante'] = null;
 
     if (!$e && $checarConflito) {
-        $c = conflito_agenda($d['ambiente_id'], $d['data_evento'], $d['hora_inicio'], $d['hora_fim'], $idAtual);
-        if ($c) {
-            $e[] = 'Este ambiente já está reservado nesse horário pelo evento "' . $c['titulo'] . '" ('
-                 . hora_br($c['hora_inicio']) . ' às ' . hora_br($c['hora_fim']) . ').';
-        }
+        $c = conflito_agenda($d['ambiente_id'], $d['data_evento'], $d['periodo'], $idAtual);
+        if ($c) $e[] = mensagem_conflito($c);
     }
     return [$d, $e];
 }

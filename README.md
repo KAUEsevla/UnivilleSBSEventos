@@ -217,7 +217,7 @@ Se instalou pelo ZIP, baixe novamente e substitua os arquivos (mantenha seu `con
 - **Período** libera o horário dentro da faixa: Matutino 08:00–11:00 · Vespertino 13:00–17:00 · Noturno 19:00–22:30 (ajustável em `PERIODOS`, `includes/functions.php`).
 - **Recursos:** Datashow/Projetor, Microfone, Som, Outros (abre campo descritivo).
 - Solicitante só edita o que está **Pendente** ou **Em revisão**; em revisão vê a observação do admin e, ao reenviar, volta para Pendente.
-- **Bloqueio de horário:** evento aprovado bloqueia aquele ambiente na data/horário; conflitos são recusados no envio e na aprovação.
+- **Bloqueio de agenda:** um evento aprovado reserva o **período inteiro** (matutino, vespertino ou noturno) daquele ambiente naquela data. Outra solicitação só é bloqueada quando é para o mesmo ambiente, na mesma data e no mesmo período de um evento já aprovado; isso é conferido no envio e na aprovação. Solicitações pendentes ou em revisão não bloqueiam.
 
 ### Segurança
 Senhas com `password_hash`, consultas preparadas (PDO), token CSRF nos formulários, usuários inativos não acessam.

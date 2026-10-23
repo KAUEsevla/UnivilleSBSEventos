@@ -35,12 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($decisao === 'aprovar') {
-            // trava o ambiente para evitar duas aprovações simultâneas no mesmo horário
+            // trava o ambiente para evitar duas aprovações simultâneas no mesmo período
             $pdo->prepare('SELECT id FROM ambientes WHERE id = ? FOR UPDATE')->execute([$s['ambiente_id']]);
-            $c = conflito_agenda((int)$s['ambiente_id'], $s['data_evento'], $s['hora_inicio'], $s['hora_fim'], (int)$s['id']);
+            $c = conflito_agenda((int)$s['ambiente_id'], $s['data_evento'], $s['periodo'], (int)$s['id']);
             if ($c) {
                 $pdo->rollBack();
-                flash('erro', 'Não é possível aprovar: o ambiente já está reservado nesse horário pelo evento "' . $c['titulo'] . '".');
+                flash('erro', 'Não é possível aprovar. ' . mensagem_conflito($c));
                 redirect($volta);
             }
         }

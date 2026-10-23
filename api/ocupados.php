@@ -1,5 +1,5 @@
 <?php
-// Retorna os horários já reservados (eventos aprovados) de um ambiente em uma data
+// Retorna os eventos aprovados de um ambiente em uma data (cada um reserva o seu período inteiro)
 require_once __DIR__ . '/../config/config.php';
 header('Content-Type: application/json; charset=utf-8');
 
@@ -19,7 +19,7 @@ if (!$ambiente || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
 }
 
 $st = db()->prepare(
-    "SELECT titulo, TIME_FORMAT(hora_inicio, '%H:%i') AS inicio, TIME_FORMAT(hora_fim, '%H:%i') AS fim
+    "SELECT titulo, periodo, TIME_FORMAT(hora_inicio, '%H:%i') AS inicio, TIME_FORMAT(hora_fim, '%H:%i') AS fim
        FROM solicitacoes
       WHERE status = 'aprovado' AND ambiente_id = ? AND data_evento = ? AND id <> ?
       ORDER BY hora_inicio"

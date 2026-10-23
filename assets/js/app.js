@@ -188,10 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lista = await r.json();
                 caixa.hidden = false;
                 caixa.classList.toggle('livre', lista.length === 0);
+                // nome do período tirado do próprio select (ex.: "Vespertino (13:00 às 17:00)")
+                const rotulo = (p) => periodo.querySelector(`option[value="${p}"]`)?.textContent.trim() ?? p;
                 caixa.innerHTML = lista.length === 0
-                    ? '✔ Nenhum horário reservado neste ambiente nesta data.'
-                    : '<strong>Horários já reservados neste ambiente:</strong><ul>' +
-                      lista.map((o) => `<li>${o.inicio} às ${o.fim} — ${escapar(o.titulo)}</li>`).join('') + '</ul>';
+                    ? '✔ Nenhum período reservado neste ambiente nesta data.'
+                    : '<strong>Períodos já reservados neste ambiente nesta data:</strong><ul>' +
+                      lista.map((o) => `<li><strong>${escapar(rotulo(o.periodo))}</strong> — ${escapar(o.titulo)} (${o.inicio} às ${o.fim})</li>`).join('') + '</ul>';
             } catch { caixa.hidden = true; }
         };
         ambiente.addEventListener('change', carregarOcupados);
