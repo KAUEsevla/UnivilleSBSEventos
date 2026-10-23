@@ -18,6 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('admin/usuarios.php');
     }
 
+    if ($acao === 'excluir' && $id) {
+        $st = db()->prepare('SELECT COUNT(*) FROM solicitacoes WHERE solicitante_id = ? OR aprovador_id = ?');
+        $st->execute([$id, $id]);
+        if ($id === $eu['id']) {
+            flash('erro', 'Você não pode excluir o seu próprio usuário.', 'Exclusão não permitida');
+        } elseif ($st->fetchColumn() > 0) {
+            flash('erro', MSG_VINCULADO, 'Exclusão não permitida');
+        } else {
+            db()->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
+            flash('sucesso', 'Usuário excluído.');
+        }
+        redirect('admin/usuarios.php');
+    }
+
     if ($acao === 'salvar') {
         $nome    = trim($_POST['nome'] ?? '');
         $usuario = trim($_POST['usuario'] ?? '');
@@ -73,7 +87,9 @@ $mostrarForm = $editar || isset($_GET['novo']);
 $f = array_merge($editar ?? ['perfil' => 'solicitante'], $_SESSION['form_usuario'] ?? []);
 unset($_SESSION['form_usuario']);
 
-$lista = db()->query('SELECT id, nome, usuario, email, perfil, ativo FROM usuarios ORDER BY id')->fetchAll();
+$lista = db()->query('SELECT u.id, u.nome, u.usuario, u.email, u.perfil, u.ativo,
+                             (SELECT COUNT(*) FROM solicitacoes s WHERE s.solicitante_id = u.id OR s.aprovador_id = u.id) AS vinculos
+                        FROM usuarios u ORDER BY u.id')->fetchAll();
 
 $titulo = 'Usuários';
 $menu = 'usuarios';
@@ -139,7 +155,13 @@ require __DIR__ . '/../includes/layout_topo.php';
                             <?= csrf_campo() ?>
                             <input type="hidden" name="acao" value="alternar">
                             <input type="hidden" name="id" value="<?= $r['id'] ?>">
-                            <button class="btn btn-sm <?= $r['ativo'] ? 'btn-perigo' : 'btn-primario' ?>" type="submit"><?= $r['ativo'] ? 'Inativar' : 'Ativar' ?></button>
+                            <button class="btn btn-sm <?= $r['ativo'] ? 'btn-contorno-perigo' : 'btn-primario' ?>" type="submit"><?= $r['ativo'] ? 'Inativar' : 'Ativar' ?></button>
+                        </form>
+                        <form method="post" class="inline" data-excluir="<?= h($r['nome']) ?>" data-vinculado="<?= $r['vinculos'] > 0 ? 1 : 0 ?>">
+                            <?= csrf_campo() ?>
+                            <input type="hidden" name="acao" value="excluir">
+                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                            <?= botao_excluir() ?>
                         </form>
                     <?php endif; ?>
                 </td>

@@ -49,5 +49,5 @@ $itens = $admin
 <div class="sidebar-fundo" data-toggle-sidebar></div>
 <main class="conteudo">
     <?php foreach (flashes() as $f): ?>
-        <div class="alerta alerta-<?= h($f['tipo']) ?>"><?= h($f['msg']) ?></div>
+        <?= flash_html($f) ?>
     <?php endforeach; ?>

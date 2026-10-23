@@ -62,6 +62,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ---------- Mensagens do servidor exibidas em pop-up ----------
+    document.querySelectorAll('[data-popup]').forEach((el) => {
+        el.hidden = true;
+        alerta(el.textContent.trim(), { titulo: el.dataset.popup });
+    });
+
+    // ---------- Exclusão com confirmação ----------
+    // data-vinculado="1": registro já usado em solicitações, nem chega a pedir confirmação
+    document.querySelectorAll('form[data-excluir]').forEach((form) => form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (form.dataset.vinculado === '1') {
+            alerta('Não foi permitido excluir pois possui registros vinculados.', { titulo: 'Exclusão não permitida' });
+            return;
+        }
+        const ok = await confirmar(`Deseja excluir "${form.dataset.excluir}"? Esta ação não pode ser desfeita.`,
+            { titulo: 'Excluir registro', textoOk: 'Excluir' });
+        if (ok) form.submit();
+    }));
+
     // ---------- Pop-up de decisão ----------
     const modal = document.getElementById('modalDecisao');
     if (modal) {
@@ -84,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {
             if (tipo.value !== 'aprovar' && motivo.value.trim() === '') {
                 e.preventDefault();
-                alert('Informe o motivo para reprovar ou solicitar ajuste.');
-                motivo.focus();
+                alerta('Informe o motivo para reprovar ou solicitar ajuste.', { titulo: 'Motivo obrigatório' })
+                    .then(() => motivo.focus());
             }
         });
 
@@ -210,10 +229,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const falta = !formRel.querySelector('input[name="col[]"]:checked') ? 'Selecione pelo menos uma coluna.'
                 : !formRel.querySelector('input[name="status[]"]:checked') ? 'Selecione pelo menos uma situação.'
                 : de.value > ate.value ? 'A data inicial deve ser anterior ou igual à final.' : '';
-            if (falta) { e.preventDefault(); alert(falta); }
+            if (falta) { e.preventDefault(); alerta(falta, { titulo: 'Verifique os filtros' }); }
         });
     }
 });
+
+// ---------- Pop-up padrão do sistema (substitui alert/confirm do navegador) ----------
+// tipo: 'aviso' (verde), 'erro' (vermelho), 'alerta' (amarelo).
+// botoes: [{ texto, valor, classe }]; resolve com o valor do botão clicado (null ao fechar).
+function popup({ titulo, mensagem, tipo = 'aviso', botoes = [{ texto: 'OK', valor: true, classe: 'btn-primario' }] }) {
+    return new Promise((resolve) => {
+        const fundo = document.createElement('div');
+        fundo.className = 'modal modal-popup';
+        fundo.innerHTML = `<div class="modal-caixa popup-${tipo}" role="alertdialog" aria-modal="true">
+            <h2></h2><p class="popup-mensagem"></p><div class="modal-acoes"></div></div>`;
+        fundo.querySelector('h2').textContent = titulo;
+        fundo.querySelector('.popup-mensagem').textContent = mensagem;
+        const acoes = fundo.querySelector('.modal-acoes');
+
+        const fechar = (valor) => { fundo.remove(); resolve(valor); };
+        botoes.forEach((b) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `btn ${b.classe || 'btn-contorno'}`;
+            btn.textContent = b.texto;
+            btn.addEventListener('click', () => fechar(b.valor));
+            acoes.append(btn);
+        });
+        fundo.addEventListener('click', (e) => { if (e.target === fundo) fechar(null); });
+        // Esc fecha só este pop-up (não deixa o evento chegar a outro modal aberto atrás)
+        fundo.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { e.stopPropagation(); fechar(null); }
+        });
+        document.body.append(fundo);
+        acoes.lastElementChild.focus();
+    });
+}
+
+const alerta = (mensagem, { titulo = 'Atenção', tipo = 'erro' } = {}) =>
+    popup({ titulo, mensagem, tipo });
+
+const confirmar = (mensagem, { titulo = 'Confirmar', textoOk = 'Confirmar', tipo = 'alerta', classeOk = 'btn-perigo' } = {}) =>
+    popup({
+        titulo, mensagem, tipo,
+        botoes: [{ texto: 'Cancelar', valor: false }, { texto: textoOk, valor: true, classe: classeOk }],
+    }).then((v) => v === true);
 
 function escapar(t) {
     const d = document.createElement('div');

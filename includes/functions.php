@@ -34,10 +34,28 @@ function redirect(string $caminho): void
 }
 
 // ---------- Mensagens flash ----------
-function flash(string $tipo, string $msg): void
+// $popup: título do pop-up; quando informado a mensagem abre em pop-up em vez de faixa no topo
+function flash(string $tipo, string $msg, ?string $popup = null): void
 {
-    $_SESSION['flash'][] = ['tipo' => $tipo, 'msg' => $msg];
+    $_SESSION['flash'][] = ['tipo' => $tipo, 'msg' => $msg, 'popup' => $popup];
 }
+
+function flash_html(array $f): string
+{
+    $popup = !empty($f['popup']) ? ' data-popup="' . h($f['popup']) . '"' : '';
+    return '<div class="alerta alerta-' . h($f['tipo']) . '"' . $popup . '>' . h($f['msg']) . '</div>';
+}
+
+// Botão de excluir (ícone de lixeira), usado nas listagens de cadastros
+function botao_excluir(): string
+{
+    return '<button class="btn btn-sm btn-perigo btn-icone" type="submit" title="Excluir" aria-label="Excluir">'
+         . '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+         . '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
+         . '</button>';
+}
+
+const MSG_VINCULADO ='Não foi permitido excluir pois possui registros vinculados.';
 
 function flashes(): array
 {

@@ -2,7 +2,21 @@
 
 Sistema de gestão de eventos da universidade: solicitação, aprovação e divulgação de eventos, com controle de ambientes e horários.
 
-**Tecnologias:** PHP 8 · MySQL/MariaDB (XAMPP) · HTML, CSS e JavaScript puro · layout responsivo (computador e celular).
+## Tecnologias utilizadas
+
+| Camada | Tecnologia | Uso no sistema |
+|---|---|---|
+| **Servidor web** | Apache (XAMPP) | Serve as páginas PHP e os arquivos estáticos |
+| **Back-end** | PHP 8 | Regras de negócio, sessões, validação dos formulários e geração do CSV |
+| **Acesso a dados** | PDO (consultas preparadas) | Conexão com o banco e proteção contra SQL Injection |
+| **Banco de dados** | MySQL / MariaDB | Usuários, cadastros e solicitações (`database/schema.sql`) |
+| **Front-end** | HTML5 + CSS3 | Layout responsivo (computador e celular) com CSS Grid/Flexbox e variáveis de cor |
+| **Interatividade** | JavaScript puro (ES6+, sem frameworks) | Pop-ups, ordenação das tabelas, horários por período e consulta de horários ocupados via Fetch API |
+| **Ícones** | SVG embutido | Ícone de lixeira dos botões de exclusão (sem bibliotecas externas) |
+| **Segurança** | `password_hash`, token CSRF, cookies `HttpOnly` | Senhas criptografadas e proteção dos formulários |
+| **Versionamento** | Git + GitHub | Controle de versão e atualização do sistema |
+
+Não há dependências externas para instalar (sem Composer, npm ou CDN): basta o XAMPP.
 
 ---
 
@@ -188,7 +202,7 @@ Se instalou pelo ZIP, baixe novamente e substitua os arquivos (mantenha seu `con
 
 ### Página pública
 - Lista os eventos **aprovados** do **mês atual até 2 meses à frente** (ex.: em 30/jan mostra janeiro, fevereiro e março).
-- Colunas: Curso/Área, Evento, Tema, Início (data e hora início/fim), Local, Palestrante/Ministrante.
+- Colunas: Evento, Tema, Início (data e hora início/fim), Local, Palestrante/Ministrante.
 - Login pelo ícone no canto superior direito.
 
 ### Administrador (menu lateral)

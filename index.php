@@ -6,11 +6,10 @@ $inicio = date('Y-m-01');
 $fim    = date('Y-m-t', strtotime('first day of +2 month'));
 
 $st = db()->prepare(
-    "SELECT s.*, COALESCE(t.nome, s.tema_outro) AS tema, a.nome AS ambiente, a.localizacao, c.nome AS curso
+    "SELECT s.*, COALESCE(t.nome, s.tema_outro) AS tema, a.nome AS ambiente, a.localizacao
        FROM solicitacoes s
        LEFT JOIN temas t   ON t.id = s.tema_id
        JOIN ambientes a    ON a.id = s.ambiente_id
-       JOIN cursos_areas c ON c.id = s.curso_area_id
       WHERE s.status = 'aprovado' AND s.data_evento BETWEEN ? AND ?
       ORDER BY s.data_evento, s.hora_inicio"
 );
@@ -55,7 +54,7 @@ unset($_SESSION['login_erro']);
 
 <main class="conteudo-publico">
     <?php foreach (flashes() as $f): ?>
-        <div class="alerta alerta-<?= h($f['tipo']) ?>"><?= h($f['msg']) ?></div>
+        <?= flash_html($f) ?>
     <?php endforeach; ?>
 
     <div class="cabecalho-pagina">
@@ -72,7 +71,6 @@ unset($_SESSION['login_erro']);
             <table class="tabela tabela-responsiva">
                 <thead>
                 <tr>
-                    <th>Curso/Área</th>
                     <th>Evento</th>
                     <th>Tema</th>
                     <th>Início</th>
@@ -83,7 +81,6 @@ unset($_SESSION['login_erro']);
                 <tbody>
                 <?php foreach ($eventos as $e): ?>
                     <tr>
-                        <td data-label="Curso/Área"><?= h($e['curso']) ?></td>
                         <td data-label="Evento"><strong><?= h($e['titulo']) ?></strong></td>
                         <td data-label="Tema"><?= h($e['tema']) ?></td>
                         <td data-label="Início" data-ordem="<?= h($e['data_evento'] . ' ' . $e['hora_inicio']) ?>"><?= data_br($e['data_evento']) ?><br><small><?= hora_br($e['hora_inicio']) ?> às <?= hora_br($e['hora_fim']) ?></small></td>

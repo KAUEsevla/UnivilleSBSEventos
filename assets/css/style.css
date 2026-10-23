@@ -118,6 +118,7 @@ button.chip { font: inherit; font-weight: 500; font-size: .85rem; cursor: pointe
 .tabela tr.inativo td { opacity: .6; }
 .tabela .acoes { text-align: right; white-space: nowrap; }
 .tabela td.acoes > * { margin: 2px 0 2px 4px; }
+.tabela td.acoes .btn { vertical-align: middle; }
 form.inline { display: inline; }
 
 .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
@@ -134,6 +135,8 @@ form.inline { display: inline; }
     font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; line-height: 1.2;
 }
 .btn-sm { padding: 6px 12px; font-size: .85rem; }
+.btn-icone { display: inline-flex; align-items: center; justify-content: center; padding-left: 9px; padding-right: 9px; }
+.btn-icone svg { display: block; }
 .btn-bloco { width: 100%; }
 .btn-primario { background: var(--verde); color: var(--branco); }
 .btn-primario:hover { background: var(--verde-escuro); }
@@ -142,6 +145,8 @@ form.inline { display: inline; }
 .btn-claro { background: var(--branco); color: var(--verde); }
 .btn-perigo { background: var(--vermelho); color: var(--branco); }
 .btn-perigo:hover { filter: brightness(.9); }
+.btn-contorno-perigo { background: var(--branco); color: var(--vermelho); border-color: var(--vermelho); }
+.btn-contorno-perigo:hover { background: #fdecea; }
 .btn-alerta { background: var(--amarelo); color: var(--branco); }
 .btn-alerta:hover { filter: brightness(.9); }
 
@@ -175,7 +180,15 @@ legend { font-weight: 700; color: var(--verde); padding: 0 6px; }
 /* ---------- Modal ---------- */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; display: grid; place-items: center; padding: 16px; }
 .modal[hidden] { display: none; }
-.modal-caixa { background: var(--branco); border-radius: var(--raio); padding: 22px; width: 100%; max-width: 520px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.modal-caixa { background: var(--branco); border-radius: var(--raio); padding: 22px; width: 100%; max-width: 520px; box-shadow: 0 10px 40px rgba(0,0,0,.25); border-top: 5px solid var(--verde); }
+.modal-caixa h2 { margin-top: 0; color: var(--verde-escuro); }
+.modal-popup { z-index: 60; }
+.modal-popup .modal-caixa { max-width: 440px; }
+.popup-mensagem { margin: 0 0 20px; white-space: pre-line; }
+.popup-erro { border-top-color: var(--vermelho); }
+.popup-erro h2 { color: var(--vermelho); }
+.popup-alerta { border-top-color: var(--amarelo); }
+.popup-alerta h2 { color: var(--amarelo); }
 .modal-acoes { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 
 /* =========================================================

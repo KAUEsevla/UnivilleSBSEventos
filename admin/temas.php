@@ -5,6 +5,7 @@ $cfg = [
     'singular' => 'Tema',
     'menu'     => 'temas',
     'pagina'   => 'admin/temas.php',
+    'vinculo'  => 'tema_id', // coluna em solicitacoes que usa este cadastro
     'campos'   => [
         'nome' => ['Nome', 'Ex.: Tecnologia e Inovação'],
     ],
