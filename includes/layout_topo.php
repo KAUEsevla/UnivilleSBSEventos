@@ -4,18 +4,18 @@ $u = usuario_atual();
 $admin = eh_admin();
 $itens = $admin
     ? [
-        'solicitacoes' => ['admin/solicitacoes.php', 'Solicitações', '📋'],
-        'usuarios'     => ['admin/usuarios.php', 'Usuários', '👥'],
-        'cursos'       => ['admin/cursos.php', 'Cursos/Áreas', '🎓'],
-        'ambientes'    => ['admin/ambientes.php', 'Ambientes', '🏛️'],
-        'temas'        => ['admin/temas.php', 'Temas', '🏷️'],
-        'relatorios'   => ['admin/relatorios.php', 'Relatórios', '📊'],
-        'publica'     => ['index.php', 'Agenda pública', '📅'],
+        'solicitacoes' => ['admin/solicitacoes.php', 'Solicitações'],
+        'usuarios'     => ['admin/usuarios.php', 'Usuários'],
+        'cursos'       => ['admin/cursos.php', 'Cursos/Áreas'],
+        'ambientes'    => ['admin/ambientes.php', 'Ambientes'],
+        'temas'        => ['admin/temas.php', 'Temas'],
+        'relatorios'   => ['admin/relatorios.php', 'Relatórios'],
+        'publica'     => ['index.php', 'Agenda pública'],
     ]
     : [
-        'minhas'  => ['solicitante/minhas.php', 'Minhas solicitações', '📋'],
-        'nova'    => ['solicitante/form.php', 'Nova solicitação', '➕'],
-        'publica' => ['index.php', 'Agenda pública', '📅'],
+        'minhas'  => ['solicitante/minhas.php', 'Minhas solicitações'],
+        'nova'    => ['solicitante/form.php', 'Nova solicitação'],
+        'publica' => ['index.php', 'Agenda pública'],
     ];
 ?>
 <!DOCTYPE html>
@@ -39,9 +39,9 @@ $itens = $admin
 </header>
 <aside class="sidebar" id="sidebar">
     <nav>
-        <?php foreach ($itens as $chave => [$link, $rotulo, $icone]): ?>
+        <?php foreach ($itens as $chave => [$link, $rotulo]): ?>
             <a href="<?= url($link) ?>" class="<?= ($menu ?? '') === $chave ? 'ativo' : '' ?>">
-                <span class="ico"><?= $icone ?></span> <?= h($rotulo) ?>
+                <?= h($rotulo) ?>
             </a>
         <?php endforeach; ?>
     </nav>

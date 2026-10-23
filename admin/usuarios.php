@@ -73,7 +73,7 @@ $mostrarForm = $editar || isset($_GET['novo']);
 $f = array_merge($editar ?? ['perfil' => 'solicitante'], $_SESSION['form_usuario'] ?? []);
 unset($_SESSION['form_usuario']);
 
-$lista = db()->query('SELECT id, nome, usuario, email, perfil, ativo FROM usuarios ORDER BY ativo DESC, nome')->fetchAll();
+$lista = db()->query('SELECT id, nome, usuario, email, perfil, ativo FROM usuarios ORDER BY id')->fetchAll();
 
 $titulo = 'Usuários';
 $menu = 'usuarios';

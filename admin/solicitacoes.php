@@ -74,7 +74,7 @@ if ($filtro !== 'todos') {
     $sql .= ' WHERE s.status = ?';
     $p[] = $filtro;
 }
-$sql .= ' ORDER BY s.criado_em ASC';
+$sql .= ' ORDER BY s.criado_em, s.id';
 $st = db()->prepare($sql);
 $st->execute($p);
 $lista = $st->fetchAll();
@@ -117,12 +117,12 @@ require __DIR__ . '/../includes/layout_topo.php';
                 <tr>
                     <td data-label="Solicitante"><?= h($s['solicitante']) ?><br><small>Criada em <?= date('d/m/Y H:i', strtotime($s['criado_em'])) ?></small></td>
                     <td data-label="Curso/Área"><?= h($s['curso']) ?></td>
-                    <td data-label="Situação">
+                    <td data-label="Situação" data-ordem="<?= h(STATUS[$s['status']] ?? $s['status']) ?>">
                         <?= badge_status($s['status']) ?>
                         <?php if ($s['aprovador']): ?><br><small>por <?= h($s['aprovador']) ?></small><?php endif; ?>
                     </td>
                     <td data-label="Evento"><strong><?= h($s['titulo']) ?></strong></td>
-                    <td data-label="Data"><?= data_br($s['data_evento']) ?></td>
+                    <td data-label="Data" data-ordem="<?= h($s['data_evento']) ?>"><?= data_br($s['data_evento']) ?></td>
                     <td data-label="Hora"><?= hora_br($s['hora_inicio']) ?> – <?= hora_br($s['hora_fim']) ?></td>
                     <td data-label="Ambiente"><?= h($s['ambiente']) ?></td>
                     <td data-label="Localização"><?= h($s['localizacao']) ?></td>

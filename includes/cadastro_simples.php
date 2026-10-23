@@ -45,7 +45,7 @@ if (!empty($_GET['editar'])) {
     $editar = $st->fetch() ?: null;
 }
 $mostrarForm = $editar || isset($_GET['novo']);
-$lista = db()->query("SELECT * FROM $tabela ORDER BY ativo DESC, nome")->fetchAll();
+$lista = db()->query("SELECT * FROM $tabela ORDER BY id")->fetchAll();
 
 $titulo = $cfg['titulo'];
 $menu = $cfg['menu'];

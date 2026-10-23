@@ -7,10 +7,10 @@ $filtros = ['todos' => 'Todas', 'pendente' => 'Pendentes', 'revisao' => 'Em revi
 $filtro = $_GET['status'] ?? 'todos';
 if (!isset($filtros[$filtro])) $filtro = 'todos';
 
-$sql = "SELECT s.*, c.nome AS curso, t.nome AS tema, a.nome AS ambiente, a.localizacao
+$sql = "SELECT s.*, c.nome AS curso, COALESCE(t.nome, s.tema_outro) AS tema, a.nome AS ambiente, a.localizacao
           FROM solicitacoes s
           JOIN cursos_areas c ON c.id = s.curso_area_id
-          JOIN temas t        ON t.id = s.tema_id
+          LEFT JOIN temas t   ON t.id = s.tema_id
           JOIN ambientes a    ON a.id = s.ambiente_id
          WHERE s.solicitante_id = ?";
 $p = [$eu['id']];
@@ -18,7 +18,7 @@ if ($filtro !== 'todos') {
     $sql .= ' AND s.status = ?';
     $p[] = $filtro;
 }
-$sql .= ' ORDER BY s.criado_em DESC';
+$sql .= ' ORDER BY s.criado_em, s.id';
 $st = db()->prepare($sql);
 $st->execute($p);
 $lista = $st->fetchAll();
@@ -59,10 +59,10 @@ require __DIR__ . '/../includes/layout_topo.php';
                 <tr>
                     <td data-label="Evento"><strong><?= h($s['titulo']) ?></strong><br><small><?= h($s['tema']) ?></small></td>
                     <td data-label="Curso/Área"><?= h($s['curso']) ?></td>
-                    <td data-label="Data"><?= data_br($s['data_evento']) ?></td>
+                    <td data-label="Data" data-ordem="<?= h($s['data_evento']) ?>"><?= data_br($s['data_evento']) ?></td>
                     <td data-label="Hora"><?= hora_br($s['hora_inicio']) ?> – <?= hora_br($s['hora_fim']) ?></td>
                     <td data-label="Ambiente"><?= h($s['ambiente']) ?><br><small><?= h($s['localizacao']) ?></small></td>
-                    <td data-label="Situação">
+                    <td data-label="Situação" data-ordem="<?= h(STATUS[$s['status']] ?? $s['status']) ?>">
                         <?= badge_status($s['status']) ?>
                         <?php if (in_array($s['status'], ['revisao', 'reprovado'], true) && $s['observacao_admin']): ?>
                             <div class="observacao"><strong><?= $s['status'] === 'revisao' ? 'Ajuste solicitado:' : 'Motivo:' ?></strong> <?= nl2br(h($s['observacao_admin'])) ?></div>

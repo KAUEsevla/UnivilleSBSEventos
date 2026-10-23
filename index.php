@@ -6,9 +6,9 @@ $inicio = date('Y-m-01');
 $fim    = date('Y-m-t', strtotime('first day of +2 month'));
 
 $st = db()->prepare(
-    "SELECT s.*, t.nome AS tema, a.nome AS ambiente, a.localizacao, c.nome AS curso
+    "SELECT s.*, COALESCE(t.nome, s.tema_outro) AS tema, a.nome AS ambiente, a.localizacao, c.nome AS curso
        FROM solicitacoes s
-       JOIN temas t        ON t.id = s.tema_id
+       LEFT JOIN temas t   ON t.id = s.tema_id
        JOIN ambientes a    ON a.id = s.ambiente_id
        JOIN cursos_areas c ON c.id = s.curso_area_id
       WHERE s.status = 'aprovado' AND s.data_evento BETWEEN ? AND ?
@@ -86,7 +86,7 @@ unset($_SESSION['login_erro']);
                         <td data-label="Curso/Área"><?= h($e['curso']) ?></td>
                         <td data-label="Evento"><strong><?= h($e['titulo']) ?></strong></td>
                         <td data-label="Tema"><?= h($e['tema']) ?></td>
-                        <td data-label="Início"><?= data_br($e['data_evento']) ?><br><small><?= hora_br($e['hora_inicio']) ?> às <?= hora_br($e['hora_fim']) ?></small></td>
+                        <td data-label="Início" data-ordem="<?= h($e['data_evento'] . ' ' . $e['hora_inicio']) ?>"><?= data_br($e['data_evento']) ?><br><small><?= hora_br($e['hora_inicio']) ?> às <?= hora_br($e['hora_fim']) ?></small></td>
                         <td data-label="Local"><?= h($e['ambiente']) ?><br><small><?= h($e['localizacao']) ?></small></td>
                         <td data-label="Palestrante"><?= h($e['palestrante'] ?: '—') ?></td>
                     </tr>

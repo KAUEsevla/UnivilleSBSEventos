@@ -108,6 +108,11 @@ button.chip { font: inherit; font-weight: 500; font-size: .85rem; cursor: pointe
     text-align: left; background: var(--verde-claro); color: var(--verde-escuro);
     padding: 10px 12px; font-size: .85rem; text-transform: uppercase; letter-spacing: .02em;
 }
+.tabela th.ordenavel { cursor: pointer; user-select: none; }
+.tabela th.ordenavel:hover { background: var(--verde-medio); }
+.tabela th.ordenavel::after { content: '↕'; margin-left: 6px; opacity: .35; }
+.tabela th[aria-sort="descending"]::after { content: '▼'; opacity: 1; }
+.tabela th[aria-sort="ascending"]::after  { content: '▲'; opacity: 1; }
 .tabela td { padding: 10px 12px; border-bottom: 1px solid var(--borda); vertical-align: top; }
 .tabela tbody tr:hover { background: #fafdfb; }
 .tabela tr.inativo td { opacity: .6; }

@@ -9,7 +9,7 @@ $colunas = [
     'solicitante'  => ['Solicitante', 'u.nome'],
     'curso'        => ['Curso/Área', 'c.nome'],
     'centro_custo' => ['Centro de custo', 'c.centro_custo'],
-    'tema'         => ['Tema', 't.nome'],
+    'tema'         => ['Tema', 'COALESCE(t.nome, s.tema_outro)'],
     'titulo'       => ['Evento', 's.titulo'],
     'palestrante'  => ['Palestrante/Ministrante', 's.palestrante'],
     'data_evento'  => ['Data do evento', "DATE_FORMAT(s.data_evento, '%d/%m/%Y')"],
@@ -53,7 +53,7 @@ if (isset($_GET['gerar'])) {
                FROM solicitacoes s
                JOIN usuarios u       ON u.id = s.solicitante_id
                JOIN cursos_areas c   ON c.id = s.curso_area_id
-               JOIN temas t          ON t.id = s.tema_id
+               LEFT JOIN temas t     ON t.id = s.tema_id
                JOIN ambientes a      ON a.id = s.ambiente_id
                LEFT JOIN usuarios ap ON ap.id = s.aprovador_id
               WHERE $filtroData BETWEEN ? AND ? AND s.status IN ($marc)
