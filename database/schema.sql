@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS solicitacoes (
   id                 INT AUTO_INCREMENT PRIMARY KEY,
   solicitante_id     INT NOT NULL,
   curso_area_id      INT NOT NULL,
-  tema_id            INT NOT NULL,
+  tema_id            INT NULL,
+  tema_outro         VARCHAR(150) NULL,
   ambiente_id        INT NOT NULL,
   titulo             VARCHAR(200) NOT NULL,
   palestrante        VARCHAR(200) NULL,
@@ -92,6 +93,19 @@ CREATE TABLE IF NOT EXISTS solicitacoes (
   INDEX idx_sol_status (status),
   INDEX idx_sol_agenda (ambiente_id, data_evento, status)
 ) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------
+-- Atualização de bancos já existentes: tema "Outro" (texto livre)
+-- tema_id fica NULL e a descrição vai em tema_outro
+-- ---------------------------------------------------------
+SET @tem_coluna := (SELECT COUNT(*) FROM information_schema.COLUMNS
+                     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'solicitacoes' AND COLUMN_NAME = 'tema_outro');
+SET @sql := IF(@tem_coluna = 0,
+    'ALTER TABLE solicitacoes MODIFY tema_id INT NULL, ADD COLUMN tema_outro VARCHAR(150) NULL AFTER tema_id',
+    'SELECT 1');
+PREPARE st FROM @sql;
+EXECUTE st;
+DEALLOCATE PREPARE st;
 
 -- ---------------------------------------------------------
 -- Primeiro administrador (cadastrado via banco)

@@ -166,6 +166,7 @@ function solicitacao_ler_post(bool $admin, ?int $idAtual = null, bool $checarCon
         'titulo'          => trim($_POST['titulo'] ?? ''),
         'curso_area_id'   => (int)($_POST['curso_area_id'] ?? 0),
         'tema_id'         => (int)($_POST['tema_id'] ?? 0),
+        'tema_outro'      => null,
         'ambiente_id'     => (int)($_POST['ambiente_id'] ?? 0),
         'palestrante'     => trim($_POST['palestrante'] ?? ''),
         'data_evento'     => $_POST['data_evento'] ?? '',
@@ -181,7 +182,17 @@ function solicitacao_ler_post(bool $admin, ?int $idAtual = null, bool $checarCon
     $e = [];
 
     if ($d['titulo'] === '') $e[] = 'Informe o nome do evento.';
-    foreach (['curso_area_id' => ['cursos_areas', 'Curso/Área'], 'tema_id' => ['temas', 'Tema'], 'ambiente_id' => ['ambientes', 'Ambiente']] as $campo => [$tab, $rot]) {
+    $validar = ['curso_area_id' => ['cursos_areas', 'Curso/Área'], 'tema_id' => ['temas', 'Tema'], 'ambiente_id' => ['ambientes', 'Ambiente']];
+
+    // Tema "Outro": sem tema cadastrado, descrição em texto livre
+    if (($_POST['tema_id'] ?? '') === 'outro') {
+        $d['tema_id'] = null;
+        $d['tema_outro'] = trim($_POST['tema_outro'] ?? '');
+        if ($d['tema_outro'] === '') $e[] = 'Descreva o tema do evento.';
+        unset($validar['tema_id']);
+    }
+
+    foreach ($validar as $campo => [$tab, $rot]) {
         $st = db()->prepare("SELECT 1 FROM $tab WHERE id = ?");
         $st->execute([$d[$campo]]);
         if (!$st->fetch()) $e[] = "Selecione um(a) $rot válido(a).";

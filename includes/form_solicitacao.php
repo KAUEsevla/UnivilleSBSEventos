@@ -12,6 +12,8 @@ $cursos    = $opcoes('cursos_areas', $s['curso_area_id'] ?? 0);
 $temas     = $opcoes('temas', $s['tema_id'] ?? 0);
 $ambientes = $opcoes('ambientes', $s['ambiente_id'] ?? 0);
 $sel = fn($a, $b) => (string)$a === (string)$b ? 'selected' : '';
+// tema_id NULL (salvo ou vindo do POST) = tema "Outro"
+$temaOutro = is_array($s) && array_key_exists('tema_id', $s) && $s['tema_id'] === null;
 ?>
 <?php if (!empty($erros)): ?>
     <div class="alerta alerta-erro">
@@ -37,12 +39,16 @@ $sel = fn($a, $b) => (string)$a === (string)$b ? 'selected' : '';
             </select>
         </label>
         <label>Tema *
-            <select name="tema_id" required>
+            <select name="tema_id" id="tema" required>
                 <option value="">Selecione...</option>
                 <?php foreach ($temas as $t): ?>
                     <option value="<?= $t['id'] ?>" <?= $sel($t['id'], $s['tema_id'] ?? '') ?>><?= h($t['nome']) ?></option>
                 <?php endforeach; ?>
+                <option value="outro" <?= $temaOutro ? 'selected' : '' ?>>Outro</option>
             </select>
+        </label>
+        <label class="col-2" id="temaOutroWrap" <?= $temaOutro ? '' : 'hidden' ?>>Descreva o tema *
+            <input type="text" name="tema_outro" id="temaOutro" maxlength="150" value="<?= h($s['tema_outro'] ?? '') ?>">
         </label>
         <label class="col-2">Palestrante/Ministrante <span class="dica">(opcional)</span>
             <input type="text" name="palestrante" maxlength="200" value="<?= h($s['palestrante'] ?? '') ?>">
@@ -77,11 +83,12 @@ $sel = fn($a, $b) => (string)$a === (string)$b ? 'selected' : '';
                 <?php endforeach; ?>
             </select>
         </label>
+        <!-- opções montadas pelo app.js conforme o período escolhido -->
         <label>Horário de início *
-            <input type="time" name="hora_inicio" id="horaInicio" required step="300" value="<?= h(hora_br($s['hora_inicio'] ?? '')) ?>">
+            <select name="hora_inicio" id="horaInicio" required data-valor="<?= h(hora_br($s['hora_inicio'] ?? '')) ?>"></select>
         </label>
         <label>Horário de término *
-            <input type="time" name="hora_fim" id="horaFim" required step="300" value="<?= h(hora_br($s['hora_fim'] ?? '')) ?>">
+            <select name="hora_fim" id="horaFim" required data-valor="<?= h(hora_br($s['hora_fim'] ?? '')) ?>"></select>
         </label>
     </div>
     <div id="ocupados" class="ocupados" data-ignorar="<?= (int)($s['id'] ?? 0) ?>" hidden></div>
